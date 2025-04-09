@@ -1,252 +1,62 @@
+"use client";
 export interface Guest {
   id: number;
   guestId: string;
   name: string;
   address: string;
   mobileNumber: string;
-  familyMembers: string;
+  familyMembers: number;
 }
 
-// Mock data for the guest table
-export const mockGuests: Guest[] = [
-  {
-    id: 1,
-    guestId: "G001",
-    name: "John Doe",
-    address: "123 Main St, Anytown, USA",
-    mobileNumber: "555-123-4567",
-    familyMembers: "2",
-  },
-  {
-    id: 2,
-    guestId: "G002",
-    name: "Jane Smith",
-    address: "456 Oak Ave, Somewhere, USA",
-    mobileNumber: "555-987-6543",
-    familyMembers: "3",
-  },
-  {
-    id: 3,
-    guestId: "G003",
-    name: "Robert Johnson",
-    address: "789 Pine Rd, Nowhere, USA",
-    mobileNumber: "555-456-7890",
-    familyMembers: "1",
-  },
-  {
-    id: 4,
-    guestId: "G004",
-    name: "Emily Davis",
-    address: "321 Elm St, Anywhere, USA",
-    mobileNumber: "555-789-0123",
-    familyMembers: "4",
-  },
-  {
-    id: 5,
-    guestId: "G005",
-    name: "Michael Wilson",
-    address: "654 Maple Dr, Everywhere, USA",
-    mobileNumber: "555-234-5678",
-    familyMembers: "2",
-  },
-  {
-    id: 6,
-    guestId: "G006",
-    name: "Sarah Brown",
-    address: "987 Cedar Ln, Someplace, USA",
-    mobileNumber: "555-345-6789",
-    familyMembers: "5",
-  },
-  {
-    id: 7,
-    guestId: "G007",
-    name: "David Miller",
-    address: "159 Birch Blvd, Othertown, USA",
-    mobileNumber: "555-456-7890",
-    familyMembers: "3",
-  },
-  {
-    id: 8,
-    guestId: "G008",
-    name: "Jennifer Taylor",
-    address: "753 Spruce St, Newtown, USA",
-    mobileNumber: "555-567-8901",
-    familyMembers: "2",
-  },
-  {
-    id: 9,
-    guestId: "G009",
-    name: "Thomas Anderson",
-    address: "951 Willow Way, Oldtown, USA",
-    mobileNumber: "555-678-9012",
-    familyMembers: "1",
-  },
-  {
-    id: 10,
-    guestId: "G010",
-    name: "Jessica Martinez",
-    address: "357 Aspen Ave, Uptown, USA",
-    mobileNumber: "555-789-0123",
-    familyMembers: "4",
-  },
-  {
-    id: 11,
-    guestId: "G011",
-    name: "Daniel Garcia",
-    address: "246 Redwood Rd, Downtown, USA",
-    mobileNumber: "555-890-1234",
-    familyMembers: "3",
-  },
-  {
-    id: 12,
-    guestId: "G012",
-    name: "Amanda Rodriguez",
-    address: "135 Sequoia St, Midtown, USA",
-    mobileNumber: "555-901-2345",
-    familyMembers: "2",
-  },
-  {
-    id: 13,
-    guestId: "G013",
-    name: "Christopher Lee",
-    address: "864 Fir Ct, Crosstown, USA",
-    mobileNumber: "555-012-3456",
-    familyMembers: "5",
-  },
-  {
-    id: 14,
-    guestId: "G014",
-    name: "Stephanie Hernandez",
-    address: "975 Cypress Cir, Hometown, USA",
-    mobileNumber: "555-123-4567",
-    familyMembers: "1",
-  },
-  {
-    id: 15,
-    guestId: "G015",
-    name: "Matthew Lopez",
-    address: "531 Juniper Jct, Yourtown, USA",
-    mobileNumber: "555-234-5678",
-    familyMembers: "4",
-  },
-  {
-    id: 16,
-    guestId: "G016",
-    name: "Nicole Gonzalez",
-    address: "642 Larch Ln, Theirtown, USA",
-    mobileNumber: "555-345-6789",
-    familyMembers: "2",
-  },
-  {
-    id: 17,
-    guestId: "G017",
-    name: "Andrew Wilson",
-    address: "753 Poplar Pl, Ourtown, USA",
-    mobileNumber: "555-456-7890",
-    familyMembers: "3",
-  },
-  {
-    id: 18,
-    guestId: "G018",
-    name: "Rebecca Moore",
-    address: "864 Sycamore St, Thattown, USA",
-    mobileNumber: "555-567-8901",
-    familyMembers: "6",
-  },
-  {
-    id: 19,
-    guestId: "G019",
-    name: "Joshua Jackson",
-    address: "975 Teak Ter, Thistown, USA",
-    mobileNumber: "555-678-9012",
-    familyMembers: "2",
-  },
-  {
-    id: 20,
-    guestId: "G020",
-    name: "Megan White",
-    address: "086 Walnut Way, Whattown, USA",
-    mobileNumber: "555-789-0123",
-    familyMembers: "1",
-  },
-  {
-    id: 21,
-    guestId: "G021",
-    name: "Kevin Harris",
-    address: "197 Alder Ave, Whichtown, USA",
-    mobileNumber: "555-890-1234",
-    familyMembers: "4",
-  },
-  {
-    id: 22,
-    guestId: "G022",
-    name: "Laura Clark",
-    address: "208 Beech Blvd, Whentown, USA",
-    mobileNumber: "555-901-2345",
-    familyMembers: "3",
-  },
-  {
-    id: 23,
-    guestId: "G023",
-    name: "Brandon Lewis",
-    address: "319 Cherry Ct, Whereabouts, USA",
-    mobileNumber: "555-012-3456",
-    familyMembers: "2",
-  },
-  {
-    id: 24,
-    guestId: "G024",
-    name: "Melissa Young",
-    address: "420 Dogwood Dr, Whytown, USA",
-    mobileNumber: "555-123-4567",
-    familyMembers: "5",
-  },
-  {
-    id: 25,
-    guestId: "G025",
-    name: "Justin Allen",
-    address: "531 Elm Ext, Howtown, USA",
-    mobileNumber: "555-234-5678",
-    familyMembers: "1",
-  },
-  {
-    id: 26,
-    guestId: "G026",
-    name: "Heather Scott",
-    address: "642 Fir Fwy, Whotown, USA",
-    mobileNumber: "555-345-6789",
-    familyMembers: "3",
-  },
-  {
-    id: 27,
-    guestId: "G027",
-    name: "Ryan Green",
-    address: "753 Gum Grv, Whatevertown, USA",
-    mobileNumber: "555-456-7890",
-    familyMembers: "2",
-  },
-  {
-    id: 28,
-    guestId: "G028",
-    name: "Amber Baker",
-    address: "864 Hickory Hwy, Wheneverville, USA",
-    mobileNumber: "555-567-8901",
-    familyMembers: "4",
-  },
-  {
-    id: 29,
-    guestId: "G029",
-    name: "Jason Adams",
-    address: "975 Ivy Isle, Whereverburg, USA",
-    mobileNumber: "555-678-9012",
-    familyMembers: "2",
-  },
-  {
-    id: 30,
-    guestId: "G030",
-    name: "Brittany Nelson",
-    address: "086 Jacaranda Jct, Whomevertown, USA",
-    mobileNumber: "555-789-0123",
-    familyMembers: "3",
-  },
-];
+export async function getGuests(): Promise<Guest[]> {
+  const response = await fetch("/api/guests");
+  if (!response.ok) {
+    throw new Error("Failed to fetch guests");
+  }
+  return response.json();
+}
+
+export async function createGuest(data: Omit<Guest, "id">): Promise<Guest> {
+  const response = await fetch("/api/guests", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(data),
+  });
+  if (!response.ok) {
+    throw new Error("Failed to create guest");
+  }
+  return response.json();
+}
+
+export async function updateGuest(
+  id: number,
+  data: Partial<Guest>
+): Promise<Guest> {
+  const response = await fetch(`/api/guests/${id}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      ...data,
+      familyMembers: data.familyMembers
+        ? Number(data.familyMembers)
+        : undefined,
+    }),
+  });
+  if (!response.ok) {
+    throw new Error("Failed to update guest");
+  }
+  return response.json();
+}
+
+export async function deleteGuest(id: number): Promise<void> {
+  const response = await fetch(`/api/guests/${id}`, {
+    method: "DELETE",
+  });
+  if (!response.ok) {
+    throw new Error("Failed to delete guest");
+  }
+}

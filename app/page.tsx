@@ -1,36 +1,56 @@
 "use client";
-import { useEffect, useState } from "react";
+
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { GuestTable } from "@/components/guest-table";
-import { getCookie } from "@/lib/utils";
+import { getGuests, Guest } from "@/lib/data";
 
 export default function Dashboard() {
   const [username, setUsername] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
+
+  const [guests, setGuests] = useState<Guest[]>([]);
   const router = useRouter();
 
   useEffect(() => {
-    // Check if user is authenticated
-    const auth = getCookie("auth");
-    if (!auth) {
-      router.push("/signin");
-      return;
-    }
-
-    // Get username from cookie
-    const storedUsername = getCookie("username");
+    const storedUsername = document.cookie.replace(
+      /(?:(?:^|.*;\s*)username\s*=\s*([^;]*).*$)|^.*$/,
+      "$1"
+    );
     if (storedUsername) {
       setUsername(storedUsername);
+    } else {
+      router.push("/signin");
     }
+
+    fetchGuests();
   }, [router]);
 
-  const handleSignOut = () => {
-    // Clear cookies
-    document.cookie = "auth=; path=/; max-age=0";
-    document.cookie = "username=; path=/; max-age=0";
-    router.push("/signin");
+  const fetchGuests = async () => {
+    try {
+      const fetchedGuests = await getGuests();
+      setGuests(fetchedGuests);
+    } catch (error) {
+      console.error("Failed to fetch guests:", error);
+    }
+  };
+
+  const handleSignOut = async () => {
+    try {
+      const response = await fetch("/api/signout", { method: "POST" });
+      if (response.ok) {
+        const redirectUrl = response.headers.get("X-Redirect");
+        if (redirectUrl) {
+          router.push(redirectUrl);
+        }
+      } else {
+        console.error("Failed to sign out");
+      }
+    } catch (error) {
+      console.error("Error during sign out:", error);
+    }
   };
 
   const handleAddGuest = () => {
@@ -85,8 +105,7 @@ export default function Dashboard() {
               <Button onClick={handleSave}>Save</Button>
             </div>
           </div>
-
-          <GuestTable searchQuery={searchQuery} />
+          <GuestTable searchQuery={searchQuery} initialGuests={guests} />
         </div>
       </main>
     </div>

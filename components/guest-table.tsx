@@ -1,6 +1,8 @@
 "use client";
+
 import type React from "react";
-import { useState, useMemo } from "react";
+
+import { useState, useEffect } from "react";
 import {
   Table,
   TableBody,
@@ -26,14 +28,15 @@ import {
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { MoreHorizontal, ArrowUpDown } from "lucide-react";
-import { type Guest, mockGuests } from "@/lib/data";
+import { type Guest, updateGuest, deleteGuest } from "@/lib/data";
 
 interface GuestTableProps {
   searchQuery: string;
+  initialGuests: Guest[];
 }
 
-export function GuestTable({ searchQuery }: GuestTableProps) {
-  const [guests, setGuests] = useState<Guest[]>(mockGuests);
+export function GuestTable({ searchQuery, initialGuests }: GuestTableProps) {
+  const [guests, setGuests] = useState<Guest[]>(initialGuests);
   const [currentPage, setCurrentPage] = useState(1);
   const [sortColumn, setSortColumn] = useState<keyof Guest | null>(null);
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
@@ -43,52 +46,41 @@ export function GuestTable({ searchQuery }: GuestTableProps) {
 
   const rowsPerPage = 10;
 
+  useEffect(() => {
+    setGuests(initialGuests);
+  }, [initialGuests]);
+
   // Filter and sort guests
-  const filteredGuests = useMemo(() => {
-    let result = [...guests];
+  const filteredGuests = guests.filter(
+    (guest) =>
+      guest.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      guest.address.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      guest.mobileNumber.includes(searchQuery) ||
+      guest.guestId.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
-    // Apply search filter
-    if (searchQuery) {
-      const query = searchQuery.toLowerCase();
-      result = result.filter(
-        (guest) =>
-          guest.name.toLowerCase().includes(query) ||
-          guest.address.toLowerCase().includes(query) ||
-          guest.mobileNumber.includes(query) ||
-          guest.guestId.toLowerCase().includes(query)
-      );
+  const sortedGuests = [...filteredGuests].sort((a, b) => {
+    if (!sortColumn) return 0;
+    const aValue = a[sortColumn];
+    const bValue = b[sortColumn];
+    if (typeof aValue === "string" && typeof bValue === "string") {
+      return sortDirection === "asc"
+        ? aValue.localeCompare(bValue)
+        : bValue.localeCompare(aValue);
     }
-
-    // Apply sorting
-    if (sortColumn) {
-      result.sort((a, b) => {
-        const aValue = a[sortColumn];
-        const bValue = b[sortColumn];
-
-        if (typeof aValue === "string" && typeof bValue === "string") {
-          return sortDirection === "asc"
-            ? aValue.localeCompare(bValue)
-            : bValue.localeCompare(aValue);
-        }
-
-        if (typeof aValue === "number" && typeof bValue === "number") {
-          return sortDirection === "asc" ? aValue - bValue : bValue - aValue;
-        }
-
-        return 0;
-      });
+    if (typeof aValue === "number" && typeof bValue === "number") {
+      return sortDirection === "asc" ? aValue - bValue : bValue - aValue;
     }
-
-    return result;
-  }, [guests, searchQuery, sortColumn, sortDirection]);
+    return 0;
+  });
 
   // Paginate guests
-  const paginatedGuests = useMemo(() => {
-    const startIndex = (currentPage - 1) * rowsPerPage;
-    return filteredGuests.slice(startIndex, startIndex + rowsPerPage);
-  }, [filteredGuests, currentPage]);
+  const paginatedGuests = sortedGuests.slice(
+    (currentPage - 1) * rowsPerPage,
+    currentPage * rowsPerPage
+  );
 
-  const totalPages = Math.ceil(filteredGuests.length / rowsPerPage);
+  const totalPages = Math.ceil(sortedGuests.length / rowsPerPage);
 
   const handleSort = (column: keyof Guest) => {
     if (sortColumn === column) {
@@ -105,22 +97,22 @@ export function GuestTable({ searchQuery }: GuestTableProps) {
     setIsEditDialogOpen(true);
   };
 
-  const handleDelete = (guestId: string) => {
+  const handleDelete = async (id: number) => {
     if (confirm("Are you sure you want to delete this guest?")) {
-      setGuests(guests.filter((guest) => guest.guestId !== guestId));
+      await deleteGuest(id);
+      setGuests(guests.filter((guest) => guest.id !== id)); // Update guests state directly
     }
   };
 
-  const handleSaveEdit = () => {
+  const handleSaveEdit = async () => {
     if (currentGuest && editFormData) {
+      await updateGuest(currentGuest.id, editFormData);
+      setIsEditDialogOpen(false);
       setGuests(
         guests.map((guest) =>
-          guest.guestId === currentGuest.guestId
-            ? { ...guest, ...editFormData }
-            : guest
+          guest.id === currentGuest.id ? { ...guest, ...editFormData } : guest
         )
-      );
-      setIsEditDialogOpen(false);
+      ); // Update guests state directly
     }
   };
 
@@ -194,7 +186,7 @@ export function GuestTable({ searchQuery }: GuestTableProps) {
                           Edit
                         </DropdownMenuItem>
                         <DropdownMenuItem
-                          onClick={() => handleDelete(guest.guestId)}
+                          onClick={() => handleDelete(guest.id)}
                         >
                           Delete
                         </DropdownMenuItem>
@@ -219,8 +211,8 @@ export function GuestTable({ searchQuery }: GuestTableProps) {
         <div className="text-sm text-muted-foreground">
           Showing{" "}
           {paginatedGuests.length > 0 ? (currentPage - 1) * rowsPerPage + 1 : 0}{" "}
-          to {Math.min(currentPage * rowsPerPage, filteredGuests.length)} of{" "}
-          {filteredGuests.length} entries
+          to {Math.min(currentPage * rowsPerPage, sortedGuests.length)} of{" "}
+          {sortedGuests.length} entries
         </div>
         <div className="flex items-center space-x-2">
           <Button
