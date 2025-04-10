@@ -3,10 +3,10 @@ import { prisma } from "@/lib/prisma";
 
 export async function PUT(
   request: Request,
-  { params }: { params: { id: string } }
+  context: { params: { id: string } }
 ) {
   try {
-    const { id } = await params;
+    const { id } = await context.params;
     const numericId = Number.parseInt(id);
     const data = await request.json();
     const guest = await prisma.guest.update({
@@ -24,10 +24,10 @@ export async function PUT(
 
 export async function DELETE(
   request: Request,
-  { params }: { params: { id: string } }
+  context: { params: { id: string } }
 ) {
   try {
-    const { id } = await params;
+    const { id } = await context.params;
     const numericId = Number.parseInt(id);
     await prisma.guest.delete({
       where: { id: numericId },
