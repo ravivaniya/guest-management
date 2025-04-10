@@ -1,12 +1,12 @@
-import { NextResponse } from "next/server";
+import { NextResponse, NextRequest } from "next/server";
 import { prisma } from "@/lib/prisma";
 
 export async function PUT(
-  request: Request,
-  context: { params: { id: string } }
-) {
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+): Promise<NextResponse> {
+  const { id } = await params;
   try {
-    const { id } = await context.params;
     const numericId = Number.parseInt(id);
     const data = await request.json();
     const guest = await prisma.guest.update({
@@ -23,11 +23,11 @@ export async function PUT(
 }
 
 export async function DELETE(
-  request: Request,
-  context: { params: { id: string } }
-) {
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+): Promise<NextResponse> {
+  const { id } = await params;
   try {
-    const { id } = await context.params;
     const numericId = Number.parseInt(id);
     await prisma.guest.delete({
       where: { id: numericId },

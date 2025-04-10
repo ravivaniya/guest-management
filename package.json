@@ -2,6 +2,13 @@
   "name": "guest-management",
   "version": "0.1.0",
   "private": true,
+  "description": "A guest management system built with Next.js, Prisma, and Tailwind CSS.",
+  "keywords": [
+    "nextjs",
+    "prisma",
+    "tailwindcss",
+    "guest-management"
+  ],
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "next build",
